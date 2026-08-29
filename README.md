@@ -1,454 +1,374 @@
-# Wireshark & Network Analysis
+# Wireshark Network Analysis Lab
 
-**Wireshark · Local Machine or Azure VM · Network Analysis**
-
-## Lab Overview
-
-| Field | Value |
-|---|---|
-| Certification Alignment | CompTIA Network+ · Security+ · CySA+ |
-| Tool | Wireshark |
-| Environment | Local Machine or Azure VM |
-| Estimated Cost | $0 |
-| Career Relevance | Network Engineer · SOC Analyst · Cloud Security Engineer · Incident Responder |
+> Hands-on network analysis lab demonstrating packet capture, DNS analysis, TCP three-way handshake analysis, HTTP traffic inspection, TCP stream reconstruction, and packet capture preservation using Wireshark.
 
 ---
 
-## Architecture — How Wireshark Captures Traffic
+## Project Overview
+
+This lab demonstrates practical network traffic analysis using Wireshark. I captured live network traffic, applied protocol-specific display filters, analyzed DNS queries and responses, examined TCP connection establishment, inspected HTTP traffic, reconstructed TCP streams, and saved packet captures for future analysis.
+
+The lab demonstrates skills applicable to network engineering, SOC analysis, cloud security, cybersecurity operations, and incident response.
+
+---
+
+## Architecture
 
 ```mermaid
-flowchart TD
-    A["Internet<br/>Web Servers · DNS Servers · Remote Hosts<br/>DNS 53 · HTTP 80 · HTTPS 443 · ICMP · TCP/UDP"]
-    B["Router / Switch<br/>Home Network or Lab Network"]
-    C["Network Interface Card (NIC)<br/>Ethernet / Wi-Fi"]
-    D["Wireshark<br/>Capture · Decode · Filter · Analyze"]
-    E["Capture<br/>Live Traffic / PCAPNG"]
-    F["Filter<br/>DNS · IP Address · TCP · HTTP"]
-    G["Analyze<br/>Protocols & Streams"]
-    H["Export<br/>PCAPNG Evidence"]
+flowchart LR
+    A[Windows Workstation] --> B[Network Interface Card]
+    B --> C[Wireshark]
+    B --> D[Local Network]
+    D --> E[DNS Server]
+    D --> F[Internet]
+    F --> G[Remote Web Server]
 
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    D --> F
-    D --> G
-    D --> H
+    C --> H[Packet Capture]
+    H --> I[Display Filters]
+    I --> J[DNS Analysis]
+    I --> K[TCP Analysis]
+    I --> L[HTTP Analysis]
+    I --> M[TCP Stream Reconstruction]
+    H --> N[PCAPNG Export]
 ```
 
 ---
 
-## The Business Problem This Lab Solves
+## Skills Demonstrated
 
-Networks carry emails, database queries, login credentials, file transfers, API calls, and other application traffic.
-
-When a service becomes unreachable, performance becomes slow, or a security alert occurs, packet analysis provides visibility into what is actually happening across the network.
-
-Wireshark captures raw data moving across a network interface and allows the traffic to be inspected from the network frame through the application payload.
-
----
-
-## Career Application
-
-| Role | How This Lab Applies |
+| Skill | Implementation |
 |---|---|
-| Network Engineer | Diagnose connectivity issues by identifying dropped, delayed, or failed connections |
-| SOC Analyst | Identify suspicious traffic patterns and investigate packet captures |
-| Cloud Security Engineer | Apply packet-analysis concepts to cloud network monitoring |
-| Help Desk | Determine whether connectivity problems are client-side or server-side |
+| Packet Capture | Captured live network traffic with Wireshark |
+| Network Interface Analysis | Identified and monitored an active Ethernet interface |
+| DNS Analysis | Examined DNS queries, responses, and A records |
+| TCP Analysis | Identified the TCP SYN, SYN-ACK, and ACK handshake |
+| Display Filtering | Isolated DNS, TCP, and HTTP traffic |
+| HTTP Analysis | Inspected HTTP GET and POST requests |
+| Security Analysis | Demonstrated exposure of application data over unencrypted HTTP |
+| Stream Reconstruction | Reconstructed application communication using Follow TCP Stream |
+| Network Troubleshooting | Used packet-level data to analyze client/server communication |
+| Evidence Preservation | Saved network captures in PCAPNG format |
 
 ---
 
-# Key Network Concepts
+## Technologies Used
 
-## What Is a Packet?
-
-A packet is a small unit of data transmitted across a network.
-
-Packets contain information such as:
-
-- Source IP address
-- Destination IP address
-- Port numbers
-- Protocol information
-- Payload data
-
-Wireshark captures these packets and allows each one to be inspected individually.
+- Wireshark
+- Windows
+- Npcap
+- TCP/IP
+- DNS
+- HTTP
+- TCP
+- TLS
+- Command Prompt
+- `nslookup`
+- `.pcapng` packet captures
 
 ---
 
-## What Is a Network Protocol?
+# Implementation
 
-A network protocol defines the rules used to format and transmit information between systems.
+## Step 1 — Install Wireshark
 
-| Protocol | Purpose |
-|---|---|
-| DNS | Resolves domain names to IP addresses |
-| HTTP | Transfers unencrypted web content |
-| HTTPS | Transfers web content protected with TLS |
-| TCP | Provides reliable connection-oriented communication |
-| ICMP | Supports ping and network diagnostics |
+Download the Windows x64 version of Wireshark from the official Wireshark website.
+
+<img width="1078" height="893" alt="ws1" src="https://github.com/user-attachments/assets/d9e2af2a-6dcf-4937-ab27-b7f4bcb432a0" />
 
 ---
 
-## TCP Three-Way Handshake
+## Step 2 — Capture Network Traffic
 
-Before two systems exchange data over TCP, they establish a connection using a three-way handshake.
+Identified the active Ethernet network interface.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
+<img width="1978" height="1030" alt="ws2" src="https://github.com/user-attachments/assets/af7c2bb4-03a3-42c6-b6b9-03c012792840" />
 
-    Client->>Server: SYN
-    Server-->>Client: SYN-ACK
-    Client->>Server: ACK
-    Note over Client,Server: TCP Connection Established
-```
+Start a live packet capture on the Ethernet interface.
 
-The expected sequence is:
+<img width="1983" height="1031" alt="ws5" src="https://github.com/user-attachments/assets/0781bd19-f557-4681-a839-03f85b7182eb" />
 
-`SYN → SYN-ACK → ACK`
 
-A SYN without a corresponding SYN-ACK can indicate that the destination is unreachable or the connection was refused.
-
-A TCP `RST` indicates that a connection was reset or forcibly closed.
+The capture began displaying TCP, HTTP, TLS, and other network traffic between the system and remote hosts.
 
 ---
 
-## DNS — Domain Name System
+## Step 3 — Generate and Analyze DNS Traffic
 
-DNS translates human-readable domain names into IP addresses.
+While Wireshark continued capturing network traffic, opened Command Prompt to generate DNS traffic for analysis.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant DNS as DNS Server
-    participant Server as Destination Server
+<img width="1550" height="1269" alt="ws4" src="https://github.com/user-attachments/assets/3dbfec6d-9ba1-4aed-9af6-d40c9a40a727" />
 
-    Client->>DNS: DNS Query
-    DNS-->>Client: DNS Response / IP Address
-    Client->>Server: Connect using resolved IP
-```
+Performed a DNS lookup for Google using:
 
-A DNS **A record** maps a hostname to an IPv4 address.
+    nslookup google.com
 
-| Record | Purpose |
-|---|---|
-| A | Maps hostname to IPv4 address |
-| AAAA | Maps hostname to IPv6 address |
-| MX | Identifies mail servers |
-| CNAME | Creates an alias for another hostname |
+The DNS lookup successfully returned IPv4 and IPv6 addresses associated with `google.com`.
 
----
+<img width="1721" height="915" alt="ws6" src="https://github.com/user-attachments/assets/f9a052b5-5fc6-49d6-ad61-9bbde0581471" />
 
-## HTTP vs HTTPS
+Next, I applied the following Wireshark display filter:
 
-HTTP transfers web content without TLS encryption.
+    dns
 
-HTTPS protects HTTP communications using TLS.
+This isolated DNS packets from the larger packet capture.
 
-**HTTP:**
+located the DNS query and corresponding DNS response for `google.com`.
 
-`Client → Unencrypted Traffic → Server`
+<img width="1981" height="1036" alt="ws7" src="https://github.com/user-attachments/assets/cee6e046-189e-4ae8-b52a-29ac75d5dbe8" />
 
-**HTTPS:**
+I expanded the DNS response and reviewed the returned DNS records.
 
-`Client → TLS Encrypted Traffic → Server`
+I compared the IPv4 addresses displayed by Wireshark with the addresses returned by `nslookup`.
 
-The HTTP exercise demonstrates why sensitive information should be protected with HTTPS.
+The results matched, confirming that Wireshark successfully captured the DNS resolution process.
+
+<img width="2052" height="1208" alt="ws8" src="https://github.com/user-attachments/assets/01a23d69-8304-4f9f-9d1d-a8a764227775" />
+
+After completing the DNS analysis, prepared Wireshark for the next capture.
+
+<img width="1985" height="1030" alt="ws9" src="https://github.com/user-attachments/assets/a83e7646-d1ee-4908-9b4a-e01f96081a78" />
 
 ---
 
-# What This Lab Demonstrates
+## Step 4 — Analyze a TCP Three-Way Handshake
 
-| Skill | Application |
-|---|---|
-| Capture Live Network Traffic | Capture traffic from an active network interface |
-| Apply Display Filters | Isolate relevant packets from large captures |
-| Read TCP Handshakes | Determine whether TCP connections succeed or fail |
-| Analyze DNS | Identify DNS queries and responses |
-| Inspect HTTP | Observe unencrypted application traffic |
-| Follow TCP Streams | Reconstruct conversations between two hosts |
-| Save Packet Captures | Preserve `.pcapng` evidence for future analysis |
+For the next portion of the lab, I used an HTTP test website to generate TCP and HTTP traffic.
 
----
+<img width="1617" height="1177" alt="ws10" src="https://github.com/user-attachments/assets/efdf47a9-6da7-4bc3-942c-72af05c136b5" />
 
-# Step 1 — Install Wireshark
+I determined the destination IP address by running:
 
-Install Wireshark for the appropriate operating system.
+    nslookup zero.webappsecurity.com
 
-| OS | Installation |
-|---|---|
-| Windows | Install Wireshark x64 and Npcap |
+The hostname resolved to:
 
-<img width="1078" height="893" alt="ws1" src="https://github.com/user-attachments/assets/893b976f-e774-43af-bfbc-f49f0b412000" />
+    54.82.22.214
 
-# Step 2 — Capture Network Traffic
+<img width="2070" height="824" alt="ws11" src="https://github.com/user-attachments/assets/1625ea43-eb79-463c-aa3e-28a5e5f6377c" />
 
-1. Open Wireshark.
-2. Locate the available network interfaces.
-3. Select the active Ethernet or Wi-Fi interface.
-4. Start the packet capture.
-5. Open a browser and generate network traffic.
-6. Allow the capture to run for approximately 30 seconds.
-7. Stop the capture.
 
-<img width="1972" height="1035" alt="ws3" src="https://github.com/user-attachments/assets/4f62ea05-f501-4f90-bf48-581f42bccb65" />
+Then filtered Wireshark traffic for the destination IP using:
 
-The resulting capture contains the frames that passed through the selected interface during the capture window.
+    tcp and ip.addr == 54.82.22.214
+
+The captured packets clearly showed the TCP three-way handshake:
+
+    SYN → SYN-ACK → ACK
+
+<img width="2001" height="976" alt="ws12" src="https://github.com/user-attachments/assets/52f46404-d681-4a1e-8b9d-19c40bd5be58" />
+
+The packet sequence demonstrated that the client successfully established a TCP connection with the remote web server over TCP port 80.
+
+After verifying the TCP handshake, prepared Wireshark for the next portion of the lab.
+
+<img width="1982" height="1041" alt="ws13" src="https://github.com/user-attachments/assets/e8972e36-7ce9-4615-8f40-269550826b5d" />
 
 ---
 
-# Step 3 — Apply Display Filters
+## Step 5 — Inspect Cleartext HTTP Traffic
 
-Wireshark display filters allow specific traffic to be isolated without deleting packets from the original capture.
+> **Security Note:** This exercise was performed in an authorized test environment designed for security training. No production credentials were used.
 
-| Filter | What It Shows | Use |
-|---|---|---|
-| `dns` | DNS queries and responses | DNS troubleshooting |
-| `http` | Unencrypted HTTP traffic | HTTP analysis |
-| `tcp` | TCP traffic | Connectivity investigation |
-| `tcp.flags.syn == 1` | TCP SYN packets | Connection attempts |
-| `tcp.flags.reset == 1` | TCP reset packets | Reset or refused connections |
-| `icmp` | ICMP traffic | Reachability testing |
-| `ip.addr == 192.168.1.1` | Traffic to/from an IP | Host-specific analysis |
-| `ip.src == 10.0.0.5` | Traffic from an IP | Source traffic analysis |
-| `tcp.port == 443` | TCP port 443 traffic | HTTPS identification |
-| `http.request` | HTTP GET/POST requests | HTTP request analysis |
+I returned to the HTTP test application's login page to generate a form submission that could be inspected with Wireshark.
 
-## Display Filters vs Capture Filters
+I entered test credentials into the intentionally insecure HTTP application.
 
-**Capture filters** are applied before packet capture and determine what traffic is recorded.
+<img width="1452" height="895" alt="ws14" src="https://github.com/user-attachments/assets/f36a8337-aae1-4a66-a11e-f4288742fab4" />
 
-**Display filters** are applied after capture and determine what traffic is displayed.
+I then applied the following Wireshark display filter:
 
-This lab uses display filters so the original packet capture remains available for additional analysis.
+    http.request.method == POST
 
----
+This isolated HTTP POST requests.
 
-# Step 4 — Guided Exercises
+After selecting the login POST request, I expanded the `HTML Form URL Encoded` section.
 
-## Exercise A — Capture a DNS Lookup
+Wireshark exposed the submitted form parameters in plaintext.
 
-Start a Wireshark capture on the active network interface.
+<img width="1974" height="912" alt="ws15" src="https://github.com/user-attachments/assets/d6a41369-c33d-4fdb-8b28-faaf54313da0" />
 
-Open Command Prompt or Terminal separately from Wireshark.
+This demonstrated a significant security weakness associated with transmitting authentication information over unencrypted HTTP.
 
-Run:
+Because HTTP does not provide TLS encryption, application data transmitted between the client and server can potentially be inspected through captured network traffic.
 
-```bash
-nslookup google.com
-```
+HTTPS addresses this risk by protecting application traffic with TLS encryption.
 
-Return to Wireshark and stop the capture.
+After completing the HTTP analysis, Prepared Wireshark for the next exercise.
 
-Apply the following display filter:
-
-```text
-dns
-```
-
-Locate the DNS query:
-
-```text
-Standard query A google.com
-```
-
-Then locate the response:
-
-```text
-Standard query response A google.com
-```
-
-Expand:
-
-```text
-Domain Name System (response)
-```
-
-Review the **Answers** section and identify the returned A record and IPv4 address.
-
-Confirm that the address corresponds with the result returned by `nslookup`.
-
-### What This Demonstrates
-
-The workstation sends a DNS query requesting the A record for `google.com`.
-
-The DNS server responds with an IP address that the workstation can use to establish the actual network connection.
+<img width="1978" height="892" alt="ws16" src="https://github.com/user-attachments/assets/5a082469-30f4-4ea8-a125-8e03ac3a6144" />
 
 ---
 
-## Exercise B — Analyze the TCP Three-Way Handshake
+## Step 6 — Follow a TCP Stream
 
-Start another packet capture.
+I applied the following display filter:
 
-Navigate to:
+    http
 
-```text
-http://example.com
-```
+I selected an HTTP packet, right-clicked the packet, and navigated to:
 
-Stop the capture.
+    Follow → TCP Stream
 
-Determine the destination IP:
+<img width="1984" height="1030" alt="ws17" src="https://github.com/user-attachments/assets/a099d4a7-80da-4718-abb2-f7a8f6cdf1f4" />
 
-```bash
-nslookup example.com
-```
+Wireshark reconstructed the individual TCP packets into a complete application conversation.
 
-Apply:
+The reconstructed stream allowed me to inspect the HTTP request sent by the client and the HTTP response returned by the server in a single view.
 
-```text
-tcp and ip.addr == [destination IP]
-```
+<img width="1312" height="1038" alt="ws18" src="https://github.com/user-attachments/assets/b332a772-a9b3-475b-881c-b4f0b99e2c25" />
 
-Locate the following packets:
-
-| Packet | Flags | Meaning |
-|---|---|---|
-| 1 | SYN | Client requests a connection |
-| 2 | SYN, ACK | Server acknowledges and accepts |
-| 3 | ACK | Client confirms the connection |
-
-Expected sequence:
-
-`SYN → SYN-ACK → ACK → TCP Connection Established`
-
-If a SYN is sent but no SYN-ACK is returned, the connection may have been refused or the destination may be unreachable.
-
-If a `RST` packet appears, the connection was reset or forcibly closed.
+This demonstrated how network analysts can reconstruct application-layer communication from individual network packets.
 
 ---
 
-## Exercise C — Inspect HTTP Traffic
+## Step 7 — Save the Packet Capture
 
-> **Educational exercise only. Only capture traffic on networks and systems you own or have explicit permission to analyze.**
+After completing the packet analysis, Saved the capture for future review and documentation.
 
-Use an authorized HTTP test environment and test credentials.
+I selected:
 
-Start a packet capture and submit the test HTTP request.
+    File → Save As
 
-Stop the capture.
+<img width="1228" height="816" alt="ws19" src="https://github.com/user-attachments/assets/bb7ff8eb-ae12-42ef-b87d-ee4d686cc4aa" />
 
-Apply:
+I then selected the `.pcapng` format and saved the packet capture.
 
-```text
-http.request.method == POST
-```
+<img width="1361" height="930" alt="ws20" src="https://github.com/user-attachments/assets/e6da7f16-3b93-402a-85ed-34fdbbec28e8" />
 
-Select the POST packet and inspect the packet detail pane.
-
-Locate:
-
-```text
-HTML Form URL Encoded
-```
-
-The exercise demonstrates how information transmitted using HTTP can appear in plaintext and why HTTPS/TLS is required for sensitive application traffic.
+Saving the capture preserves the network traffic so that it can be reopened and analyzed later without requiring another live capture.
 
 ---
 
-## Exercise D — Follow a TCP Stream
+# Lab Validation
 
-Capture HTTP traffic.
+The completed lab successfully demonstrated:
 
-Select an HTTP packet.
-
-Navigate to:
-
-```text
-Right-click → Follow → TCP Stream
-```
-
-Wireshark reconstructs the individual TCP packets into a complete conversation between the client and server.
-
-This provides visibility into the complete application exchange rather than viewing individual packets separately.
-
----
-
-# Step 5 — Save and Export Captures
-
-## Save a Capture
-
-```text
-File → Save As → choose .pcapng
-```
-
-## Export Filtered Packets
-
-```text
-Apply Display Filter
-        ↓
-File
-        ↓
-Export Specified Packets
-        ↓
-Displayed
-```
-
-## Reopen a Capture
-
-```text
-File → Open → Select .pcapng
-```
-
-## TShark Command-Line Capture
-
-```bash
-tshark -i eth0 -w capture.pcapng -c 1000
-```
-
-| Option | Purpose |
-|---|---|
-| `-i` | Interface name |
-| `-w` | Output file |
-| `-c` | Number of packets before stopping |
+- Live packet capture using Wireshark
+- Network interface selection
+- DNS query and response analysis
+- DNS A record verification
+- `nslookup` DNS troubleshooting
+- Wireshark display filtering
+- TCP three-way handshake analysis
+- HTTP traffic inspection
+- HTTP POST request analysis
+- Cleartext application data exposure over HTTP
+- TCP stream reconstruction
+- PCAPNG packet capture preservation
 
 ---
 
-# Verification — Confirm the Lab Is Working
+# Key Findings
 
-| Skill | How to Verify |
-|---|---|
-| DNS Capture | Apply `dns` and identify a query packet and its response with matching transaction IDs |
-| TCP Handshake | Identify three sequential packets containing SYN, SYN-ACK, and ACK |
-| Display Filters | Filter traffic by IP address, port, and protocol |
-| Stream Reconstruction | Follow a TCP stream and read the HTTP request and response |
-| File Management | Save the capture, close Wireshark, reopen the file, and confirm the packets remain available |
+### DNS Resolution
+
+DNS traffic captured in Wireshark showed the workstation sending DNS queries and receiving responses containing IP addresses associated with the requested hostname.
+
+The results captured in Wireshark matched the addresses returned by `nslookup`.
+
+### TCP Connection Establishment
+
+The packet capture demonstrated the standard TCP three-way handshake:
+
+    Client → Server: SYN
+    Server → Client: SYN-ACK
+    Client → Server: ACK
+
+This confirmed successful TCP connection establishment between the client and remote server.
+
+### HTTP Security
+
+The HTTP analysis demonstrated that unencrypted HTTP traffic can expose application-layer information inside packet captures.
+
+This reinforces the importance of using HTTPS/TLS to protect sensitive data transmitted between clients and servers.
+
+### TCP Stream Reconstruction
+
+Wireshark's **Follow TCP Stream** feature reconstructed packets belonging to the same TCP session and displayed the application conversation in a readable format.
+
+This capability is valuable during network troubleshooting, security investigations, and incident response.
 
 ---
 
-# Portfolio Captures
+# Security Considerations
 
-Save the following captures:
+Packet captures can contain sensitive information, including:
 
-```text
-captures/
-├── dns-lookup.pcapng
-├── tcp-handshake.pcapng
-└── tcp-stream.pcapng
-```
+- IP addresses
+- Hostnames
+- DNS queries
+- URLs
+- Cookies
+- Authentication headers
+- Session identifiers
+- Application data
+- Cleartext credentials
 
-| Capture | Demonstrated Skill |
-|---|---|
-| `dns-lookup.pcapng` | DNS query and response analysis |
-| `tcp-handshake.pcapng` | TCP connection establishment |
-| `tcp-stream.pcapng` | TCP stream reconstruction |
+Packet captures should therefore be handled as potentially sensitive security evidence.
+
+Only network traffic from systems and networks that you own or are explicitly authorized to monitor should be captured and analyzed.
+
+Sensitive information should be removed or sanitized before screenshots or packet captures are published to a public GitHub repository.
 
 ---
 
 # Repository Structure
 
-```text
-wireshark-network-analysis/
-│
-├── README.md
-│
-├── captures/
-│   ├── dns-lookup.pcapng
-│   ├── tcp-handshake.pcapng
-│   └── tcp-stream.pcapng
-│
-└── screenshots/
-```
+    Wireshark-Network-Analysis/
+    │
+    ├── README.md
+    │
+    ├── screenshots/
+    │   ├── ws1.png
+    │   ├── ws2.png
+    │   ├── ws3.png
+    │   ├── ws4.png
+    │   ├── ws5.png
+    │   ├── ws6.png
+    │   ├── ws7.png
+    │   ├── ws8.png
+    │   ├── ws9.png
+    │   ├── ws10.png
+    │   ├── ws11.png
+    │   ├── ws12.png
+    │   ├── ws13.png
+    │   ├── ws14.png
+    │   ├── ws15.png
+    │   ├── ws16.png
+    │   ├── ws17.png
+    │   ├── ws18.png
+    │   ├── ws19.png
+    │   ├── ws20.png
+    │   ├── ws21.png
+    │   ├── ws22.png
+    │   ├── ws23.png
+    │   └── ws24.png
+    │
+    └── captures/
+        └── network-analysis.pcapng
+
+---
+
+# Project Results
+
+By completing this lab, I gained hands-on experience capturing and analyzing live network traffic using Wireshark.
+
+I demonstrated the ability to:
+
+- Identify network interfaces
+- Capture live network packets
+- Filter large packet captures
+- Analyze DNS resolution
+- Identify TCP connection establishment
+- Inspect HTTP requests
+- Identify security risks associated with unencrypted traffic
+- Reconstruct TCP conversations
+- Preserve packet captures for later investigation
+
+These skills provide a practical foundation for network troubleshooting, security monitoring, SOC investigations, cloud security analysis, and incident response.
+
+---
+
+# Key Takeaway
+
+Wireshark provides packet-level visibility into how systems communicate across a network. By analyzing DNS, TCP, HTTP, and application traffic, I was able to move beyond simply observing whether a connection worked and examine exactly how the communication occurred between the client and remote systems.
