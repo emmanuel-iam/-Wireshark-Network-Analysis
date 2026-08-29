@@ -194,8 +194,6 @@ Install Wireshark for the appropriate operating system.
 6. Allow the capture to run for approximately 30 seconds.
 7. Stop the capture.
 
-<img width="1491" height="987" alt="ws1" src="https://github.com/user-attachments/assets/03623635-7c4e-4f95-9911-273c4eca1d6a" />
-
 <img width="1972" height="1035" alt="ws3" src="https://github.com/user-attachments/assets/4f62ea05-f501-4f90-bf48-581f42bccb65" />
 
 The resulting capture contains the frames that passed through the selected interface during the capture window.
