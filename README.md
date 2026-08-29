@@ -238,6 +238,28 @@ I then selected the `.pcapng` format and saved the packet capture.
 Saving the capture preserves the network traffic so that it can be reopened and analyzed later without requiring another live capture.
 
 ---
+## Export only the packets matching your current filter
+
+```
+Apply your display filter first
+File → Export Specified Packets → Displayed
+```
+
+<img width="1983" height="772" alt="ws21" src="https://github.com/user-attachments/assets/67ed691c-b223-48eb-a815-283b339a3c78" />
+
+<img width="1971" height="787" alt="ws22" src="https://github.com/user-attachments/assets/b232aeac-108e-48d6-a363-864bff1c5cc2" />
+
+<img width="1350" height="949" alt="ws23" src="https://github.com/user-attachments/assets/4bb5e593-3942-49e5-83bb-7598a6b121a0" />
+
+## Re-open a saved capture
+
+```
+File → Open → select your .pcapng file
+```
+
+<img width="1957" height="654" alt="ws24" src="https://github.com/user-attachments/assets/b4636457-8419-4e3b-9d90-9ed9becd056c" />
+
+
 
 # Lab Validation
 
